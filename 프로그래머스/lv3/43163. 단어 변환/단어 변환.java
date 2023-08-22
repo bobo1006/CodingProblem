@@ -1,14 +1,20 @@
 class Solution {
-    static int answer = 0;
+    static int answer = Integer.MAX_VALUE;
     public int solution(String begin, String target, String[] words) {
         boolean[] visited = new boolean[words.length];
         dfs(words, target, begin, 0, visited);
+        
+        if (answer == Integer.MAX_VALUE){
+            answer = 0;    
+        }
         return answer;
     }
 
     private void dfs(String[] words, String target, String now, int cnt, boolean[] visited){
         if (target.equals(now)){
-            answer = cnt;
+            if (answer > cnt){
+                answer = cnt;
+            }
             return;
         }
 
