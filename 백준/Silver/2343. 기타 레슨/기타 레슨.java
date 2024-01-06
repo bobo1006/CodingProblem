@@ -20,12 +20,12 @@ class Main {
         }
         // 한편의 블루레이 크기가 최소가 되게 M개를 만든다.
         int val = 0;
-        while (start <= end){
+        while (start < end){
             int m = (start + end)/2;
             int cnt = count(m);
 
             if (cnt <= M){
-                end = m - 1;
+                end = m;
             }
             else{
                 start = m + 1;
