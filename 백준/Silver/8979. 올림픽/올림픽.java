@@ -48,15 +48,18 @@ class Main {
                 return 0;
             }
         });
-        int ans = 0;
-
+        int ans = 1;
+        arr[0].num = 1;
+        
         for (int i=1;i<N;i++){
             Country now = arr[i];
             Country temp = arr[i-1];
-            now.num = i+1;
 
             if (temp.gold == now.gold && temp.silver == now.silver && temp.bronze == now.bronze){
                 now.num = temp.num;
+            }
+            else{
+                now.num = i+1;
             }
             if(now.name == K){
                 ans = now.num;
