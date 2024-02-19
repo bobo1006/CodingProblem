@@ -5,30 +5,32 @@ class Main {
     public static void main(String[] args) throws Exception {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         int T = Integer.parseInt(br.readLine());
+        int max = 0;
+        int[] arrN = new int[T];
         StringBuilder sb = new StringBuilder();
-
-        for(int i=0;i<T;i++){
-            int n = Integer.parseInt(br.readLine());
-            int ans = dynamic(n);
-            sb.append(ans).append('\n');
+        
+        for (int i = 0; i < T; i++) {
+            arrN[i] = Integer.parseInt(br.readLine());
+            max = Math.max(arrN[i], max);
         }
-        System.out.println(sb);
-    }
-    public static int dynamic(int n){
-        int[][] dp = new int[n+1][4];
+        int[][] dp = new int[max + 1][4];
 
-        for (int i=0;i<=3;i++){
+        for (int i = 0; i <= 3; i++) {
             dp[0][i] = 1;
         }
-        for (int i=1;i<=n;i++){
-            for (int j=1;j<=3;j++){
-                if (i-j < 0){
-                    dp[i][j] = dp[i][j-1];
+
+        for (int i = 1; i <= max; i++) {
+            for (int j = 1; j <= 3; j++) {
+                if (i - j < 0) {
+                    dp[i][j] = dp[i][j - 1];
                     continue;
                 }
-                dp[i][j] = dp[i][j-1] + dp[i-j][j];
+                dp[i][j] = dp[i][j - 1] + dp[i - j][j];
             }
         }
-        return dp[n][3];
+        for (int i=0;i<T;i++){
+            sb.append(dp[arrN[i]][3]).append('\n');
+        }
+        System.out.println(sb);
     }
 }
