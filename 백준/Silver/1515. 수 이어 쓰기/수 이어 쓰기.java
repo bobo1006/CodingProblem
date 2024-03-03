@@ -6,23 +6,23 @@ class Main {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         String s = br.readLine();
         int num = 1;
-        char[] arr = String.valueOf(num).toCharArray();
         int idx = 0;
-
+        String number = String.valueOf(num);
+        
         for (int i=0;i<s.length();i++) {
             char now = s.charAt(i);
 
-            if (arr.length == idx){
+            if (number.length() == idx){
                 num++;
-                arr = String.valueOf(num).toCharArray();
+                number = String.valueOf(num);
                 idx = 0;
             }
 
-            while (arr[idx] != now){
+            while (number.charAt(idx) != now){
                 idx++;
-                if (arr.length == idx){
+                if (number.length() == idx){
                     num++;
-                    arr = String.valueOf(num).toCharArray();
+                    number = String.valueOf(num);
                     idx = 0;
                 }
             }
