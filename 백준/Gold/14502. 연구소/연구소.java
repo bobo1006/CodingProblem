@@ -13,7 +13,6 @@ class Main {
         N = Integer.parseInt(st.nextToken());
         M = Integer.parseInt(st.nextToken());
         map = new int[N][M];
-        boolean[][] wall = new boolean[N][M];
         virus = new ArrayList<>();
 
         for (int i = 0; i < N; i++) {
@@ -23,10 +22,10 @@ class Main {
                 if (map[i][j] == 2) virus.add(new int[]{i,j});
             }
         }
-        dfs(0,wall);
+        dfs(0);
         System.out.println(max);
     }
-    public static void dfs(int cntWall, boolean[][] wall){
+    public static void dfs(int cntWall){
         if (cntWall == 3){
             max = Math.max(getSafeZone(), max);
             return;
@@ -34,12 +33,10 @@ class Main {
 
         for (int i=0;i<N;i++){
             for (int j=0;j<M;j++){
-                if (map[i][j] == 0 && !wall[i][j]){
+                if (map[i][j] == 0){
                     map[i][j] = 1;
-                    wall[i][j] = true;
-                    dfs(cntWall + 1, wall);
+                    dfs(cntWall + 1);
                     map[i][j] = 0;
-                    wall[i][j] = false;
                 }
             }
         }
