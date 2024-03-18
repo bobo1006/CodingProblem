@@ -12,23 +12,18 @@ public class Main {
             int N = Integer.parseInt(br.readLine());
             long sum = 0;
             int[] arr = new int[N];
-            int max = 0;
+            int max = N-1;
             st = new StringTokenizer(br.readLine());
             for (int j=0;j<N;j++){
                 arr[j] = Integer.parseInt(st.nextToken());
-                if (arr[j] > arr[max]) max = j;
             }
 
-            for (int j=0;j<=max;j++){
-                sum += arr[max] - arr[j];
-            }
-            int num = N-1;
-            for (int j=N-2;j>max;j--){
-                if (arr[num] < arr[j]){
-                    num = j;
+            for (int j=N-2;j>=0;j--){
+                if (arr[max] < arr[j]){
+                    max = j;
                 }
                 else{
-                    sum += arr[num] - arr[j];
+                    sum += arr[max] - arr[j];
                 }
             }
             sb.append(sum).append('\n');
