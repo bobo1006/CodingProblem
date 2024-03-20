@@ -50,18 +50,14 @@ class Main {
     }
     private static int find(){
         int cnt = 0;
-        for (int i=0;i<101;i++){
-            for (int j=0;j<101;j++){
+        for (int i=0;i<100;i++){
+            for (int j=0;j<100;j++){
                 if (map[i][j]){
-                    if(check(i,j)) cnt++;
+                    if (!map[i+1][j] || !map[i][j+1] || !map[i+1][j+1]) continue;
+                    cnt++;
                 }
             }
         }
         return cnt;
-    }
-    private static boolean check(int i, int j){
-        if (i < 0 || j < 0 || i > 99 || j > 99) return false;
-        if (!map[i+1][j] || !map[i][j+1] || !map[i+1][j+1]) return false;
-        return true;
     }
 }
