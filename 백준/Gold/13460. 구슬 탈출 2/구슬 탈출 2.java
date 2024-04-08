@@ -10,12 +10,21 @@ public class Main {
             this.y = y;
         }
     }
-    static boolean redGoal = false;
-    static boolean blueGoal = false;
-    static int answer = Integer.MAX_VALUE;
+    static class Balls{
+        Point red;
+        Point blue;
+        int cnt;
+        Balls(Point red, Point blue, int cnt){
+            this.red = red;
+            this.blue = blue;
+            this.cnt = cnt;
+        }
+    }
     static int[][] dir = {{1,0},{-1,0},{0,1},{0,-1}};
     static char[][] map;
     static int N,M;
+    static boolean redGoal;
+    static boolean blueGoal;
 
     public static void main(String[] args) throws Exception {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
@@ -39,9 +48,8 @@ public class Main {
                 }
             }
         }
-
-        dfs(red, blue, 0);
-        if (answer == Integer.MAX_VALUE) answer = -1;
+        int answer = bfs(red,blue);
+        if (answer > 10) answer = -1;
         System.out.println(answer);
     }
     private static void setLocation(Point nowRed, Point nowBlue, Point nextRed, Point nextBlue, int d){
@@ -64,29 +72,37 @@ public class Main {
         }
 
     }
-    private static void dfs(Point nowRed, Point nowBlue, int cnt){
-        if (cnt > 10 || cnt >= answer || blueGoal) return;
+    private static int bfs(Point red, Point blue){
+        Queue<Balls> queue = new LinkedList<>();
+        queue.add(new Balls(red, blue, 0));
+        boolean[][][][] visited = new boolean[N][M][N][M];
+        visited[red.x][red.y][blue.x][blue.y] = true;
+        int cnt = -1;
 
-        if (redGoal){
-            answer = Math.min(cnt, answer);
-            return;
-        }
+        while (!queue.isEmpty()){
+            Balls now = queue.poll();
+            Point nowRed = now.red;
+            Point nowBlue = now.blue;
 
-        for (int i=0;i<4;i++){
-            boolean temp1 = redGoal;
-            boolean temp2 = blueGoal;
+            for (int i=0;i<4;i++){
+                redGoal = false;
+                blueGoal = false;
 
-            Point nextRed = getNext(nowRed, 0, i);
-            Point nextBlue = getNext(nowBlue, 1, i);
+                Point nextRed = getNext(nowRed, 0, i);
+                Point nextBlue = getNext(nowBlue, 1, i);
+                if (blueGoal) continue;
+                if (redGoal) return now.cnt+1;
+                
+                if (nextRed.x == nextBlue.x && nextRed.y == nextBlue.y){
+                    setLocation(nowRed, nowBlue, nextRed, nextBlue, i);
+                }
+                if (visited[nextRed.x][nextRed.y][nextBlue.x][nextBlue.y]) continue;
 
-
-            if (nextRed.x == nextBlue.x && nextRed.y == nextBlue.y){
-                setLocation(nowRed, nowBlue, nextRed, nextBlue, i);
+                visited[nextRed.x][nextRed.y][nextBlue.x][nextBlue.y] = true;
+                queue.add(new Balls(nextRed, nextBlue, now.cnt+1));
             }
-            dfs(nextRed, nextBlue, cnt+1);
-            redGoal = temp1;
-            blueGoal = temp2;
         }
+        return cnt;
     }
 
     private static Point getNext(Point point, int color, int d) {
@@ -96,7 +112,10 @@ public class Main {
         while (true){
             nextX += dir[d][0];
             nextY += dir[d][1];
-            if(checkWallOrGoal(nextX, nextY, color)){
+            if (checkGoal(nextX, nextY, color)){
+                break;
+            }
+            if(checkWall(nextX, nextY)){
                 nextX -= dir[d][0];
                 nextY -= dir[d][1];
                 break;
@@ -105,9 +124,12 @@ public class Main {
         return new Point(nextX, nextY);
 
     }
-    private static boolean checkWallOrGoal(int x, int y, int color){
+    private static boolean checkWall(int x, int y){
         if (x <= 0 || y <= 0 || x >= N-1 || y >= M-1) return true;
         if (map[x][y] == '#') return true;
+        return false;
+    }
+    private static boolean checkGoal(int x, int y, int color){
         if (map[x][y] == 'O'){
             if (color == 0) redGoal = true;
             else blueGoal = true;
