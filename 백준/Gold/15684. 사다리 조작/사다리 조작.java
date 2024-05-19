@@ -5,7 +5,8 @@ public class Main {
 
     static int N,H;
     static int[][] map;
-    static boolean flag;
+    static boolean flag = false;
+    static int answer = -1;
 
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
@@ -21,34 +22,37 @@ public class Main {
             st = new StringTokenizer(br.readLine());
             int a = Integer.parseInt(st.nextToken());
             int b = Integer.parseInt(st.nextToken());
-            map[a][b] = 2;   // 2 : right
-            map[a][b+1] = 1; // 1 : left
+            map[a][b] = 1;
+            map[a][b+1] = 2;
         }
         for (int i=0;i<=3;i++){
             backTracking(0,1, i);
+            if (flag) break;
         }
 
-        System.out.println(-1);
+        System.out.println(answer);
     }
 
     private static void backTracking(int cnt, int idxH, int limit){
+        if (flag) return;
+
         if (limit == cnt){
-            if (checkGoal()){
-                System.out.println(cnt);
-                System.exit(0);
+            if (checkGoal()) {
+                answer = cnt;
+                flag = true;
             }
             return;
         }
 
         for (int i=idxH;i<=H;i++){
             for (int j=1;j<N;j++){
-                if (map[i][j] != 0 || map[i][j+1] != 0) continue;
-
-                map[i][j] = 2;
-                map[i][j+1] = 1;
-                backTracking(cnt+1, idxH, limit);
-                map[i][j] = 0;
-                map[i][j+1] = 0;
+                if (map[i][j] == 0 && map[i][j+1] == 0){
+                    map[i][j] = 1;
+                    map[i][j+1] = 2;
+                    backTracking(cnt+1, i, limit);
+                    map[i][j] = 0;
+                    map[i][j+1] = 0;
+                }
             }
         }
     }
@@ -58,10 +62,10 @@ public class Main {
             int num = i;
 
             for (int j=1;j<=H;j++){
-                if (map[j][num] == 1){
+                if (map[j][num] == 2){
                     num--;
                 }
-                else if (map[j][num] == 2){
+                else if (map[j][num] == 1){
                     num++;
                 }
             }
