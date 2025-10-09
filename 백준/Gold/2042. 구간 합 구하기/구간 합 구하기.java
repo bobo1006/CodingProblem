@@ -1,68 +1,81 @@
-import java.io.*;
-import java.util.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.StringTokenizer;
 
 public class Main {
+
     static long[] tree;
-    static long[] arr;
 
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        StringBuilder sb = new StringBuilder();
         StringTokenizer st = new StringTokenizer(br.readLine());
         int N = Integer.parseInt(st.nextToken());
         int M = Integer.parseInt(st.nextToken());
         int K = Integer.parseInt(st.nextToken());
+        StringBuilder sb = new StringBuilder();
 
-        arr = new long[N+1];
+        long[] arr = new long[N+1];
         for (int i=1;i<=N;i++){
             arr[i] = Long.parseLong(br.readLine());
         }
 
-        tree = new long[N*4];
-        init(1, N, 1);
+        tree = new long[4*N];
+        buildTree(arr, 1, 1, N);
 
         for (int i=0;i<M+K;i++){
             st = new StringTokenizer(br.readLine());
             int a = Integer.parseInt(st.nextToken());
             int b = Integer.parseInt(st.nextToken());
             long c = Long.parseLong(st.nextToken());
+
             if (a == 1){
-                long num = c - arr[b];
+                long diff = c - arr[b];
                 arr[b] = c;
-                change(1,N,num,1,b);
+                update(b, 1, 1, N, diff);
             }
             else{
-                sb.append(sum(1,N,1,b,(int)c)).append('\n');
+                sb.append(query(1 , b, c, 1, N)).append('\n');
             }
+
         }
         System.out.println(sb);
-
     }
-    private static long init(int start, int end, int node){
-        if (start == end) return tree[node] = arr[start];
+
+    public static void buildTree(long[] origin, int node, int start, int end){
+        if (start == end){
+            tree[node] = origin[start];
+            return;
+        }
         int mid = (start + end) / 2;
-
-        return tree[node] = init(start, mid, node * 2)
-                + init(mid+1, end, node * 2 + 1);
+        buildTree(origin, node * 2, start, mid);
+        buildTree(origin, node * 2 + 1, mid + 1, end);
+        tree[node] = tree[node * 2] + tree[node * 2 + 1];
     }
 
-    private static long sum(int start, int end, int node, int left, int right){
-        if (left > end || right < start) return 0;
-        if (left <= start && end <= right) return tree[node];
-
+    public static long query(int node, int targetLeft, long targetRight, int start, int end){
+        if (end < targetLeft || targetRight < start) return 0;
+        if (targetLeft <= start && end <= targetRight){
+            return tree[node];
+        }
         int mid = (start + end) / 2;
-        return sum(start , mid, node*2, left, right)
-                + sum(mid+1, end, node*2+1, left, right);
-    }
+        long lSum = query(node * 2, targetLeft, targetRight, start, mid);
+        long rSum = query(node * 2+ 1, targetLeft, targetRight, mid + 1, end);
 
-    private static void change(int start, int end, long diff, int node, int index){
-        if (index > end || index < start) return ;
+        return lSum + rSum;
+    }
+    public static void update(int index, int node, int start, int end, long diff){
+        if (start > index || index > end){
+            return;
+        }
         tree[node] += diff;
 
-        if (start == end) return;
+        if (start == end){
+            return;
+        }
+        int mid = (start + end) / 2;
+        update(index, node * 2, start, mid, diff);
+        update(index, node * 2 + 1, mid + 1, end, diff);
 
-        int mid = (start+end)/2;
-        change(start, mid, diff, node*2, index);
-        change(mid+1, end, diff, node*2+1, index);
     }
 }
