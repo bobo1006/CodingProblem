@@ -38,9 +38,8 @@ public class Main {
             st = new StringTokenizer(br.readLine());
             int a = Integer.parseInt(st.nextToken());
             int b = Integer.parseInt(st.nextToken());
-            int min = queryMin(1, 1, N, a, b);
-            int max = queryMax(1, 1, N, a, b);
-            sb.append(min).append(' ').append(max).append('\n');
+            Node minmax = query(1, 1, N, a, b);
+            sb.append(minmax.min).append(' ').append(minmax.max).append('\n');
         }
         System.out.println(sb);
 
@@ -58,27 +57,16 @@ public class Main {
                 Math.max(tree[node*2].max, tree[node*2+1].max));
     }
 
-    public static int queryMax(int node, int start, int end, int targetLeft, int targetRight){
-        if (targetLeft > end || targetRight < start) return 0;
+
+    public static Node query(int node, int start, int end, int targetLeft, int targetRight){
+        if (targetLeft > end || targetRight < start) return new Node(Integer.MAX_VALUE, 0);
         if (targetLeft <= start && end <= targetRight){
-            return tree[node].max;
+            return tree[node];
         }
         int mid = (start + end) / 2;
-        int lMax = queryMax(node * 2, start, mid, targetLeft, targetRight);
-        int rMax = queryMax(node * 2 + 1, mid + 1, end, targetLeft, targetRight);
-        return Math.max(lMax, rMax);
-
-    }
-
-    public static int queryMin(int node, int start, int end, int targetLeft, int targetRight){
-        if (targetLeft > end || targetRight < start) return Integer.MAX_VALUE;
-        if (targetLeft <= start && end <= targetRight){
-            return tree[node].min;
-        }
-        int mid = (start + end) / 2;
-        int lMin = queryMin(node * 2, start, mid, targetLeft, targetRight);
-        int rMin = queryMin(node * 2 + 1, mid + 1, end, targetLeft, targetRight);
-        return Math.min(lMin, rMin);
+        Node l = query(node * 2, start, mid, targetLeft, targetRight);
+        Node r = query(node * 2 + 1, mid + 1, end, targetLeft, targetRight);
+        return new Node(Math.min(l.min, r.min), Math.max(l.max, r.max));
 
     }
 }
