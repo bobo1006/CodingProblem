@@ -54,16 +54,26 @@ public class Main {
             }
 
             dist = new int[idx][idx];
+            boolean flag = false;
 
             for (int i=0;i<idx;i++){
+                int[][] distance = getDist(node[i]);
+
                 for (int j=0;j<idx;j++){
-                    if (dist[i][j] == 0) {
-                        getDist(i, j, node[i], node[j]);
+                    int d = distance[node[j].x][node[j].y];
+                    dist[i][j] = d;
+                    dist[j][i] = d;
+
+                    if (dist[i][j] == INF){
+                        flag = true;
+                        break;
                     }
                 }
+
+                if (flag) break;
             }
 
-            if (ans == -1){
+            if (flag){
                 sb.append(-1).append('\n');
                 continue;
             }
@@ -75,37 +85,34 @@ public class Main {
         System.out.println(sb);
     }
 
-    public static void getDist(int startNum, int endNum, Point start, Point end){
+    public static int[][] getDist(Point start){
         Queue<Point> queue = new ArrayDeque<>();
-        boolean[][] visited = new boolean[h][w];
+        int[][] distance = new int[h][w];
 
-        visited[start.x][start.y] = true;
+        for (int i=0;i<h;i++){
+            Arrays.fill(distance[i], INF);
+        }
+
+        distance[start.x][start.y] = 0;
         queue.add(start);
 
-        while (!queue.isEmpty()){
+        while (!queue.isEmpty()) {
             Point now = queue.poll();
 
-            if (now.x == end.x && now.y == end.y){
-                dist[startNum][endNum] = now.dist;
-                dist[endNum][startNum] = now.dist;
-                return;
-            }
-            for (int i=0;i<4;i++){
+            for (int i = 0; i < 4; i++) {
                 int nextX = now.x + dx[i];
                 int nextY = now.y + dy[i];
 
                 if (nextX < 0 || nextY < 0 || nextX >= h || nextY >= w) continue;
-                if (visited[nextX][nextY]) continue;
+                if (distance[nextX][nextY] != INF) continue;
                 if (map[nextX][nextY] == 'x') continue;
-                
-                visited[nextX][nextY] = true;
+
+                distance[nextX][nextY] = now.dist + 1;
                 queue.add(new Point(nextX, nextY, now.dist + 1));
             }
         }
 
-        ans = -1;
-        dist[startNum][endNum] = INF;
-        dist[endNum][startNum] = INF;
+        return distance;
     }
 
     public static void dfs(int cnt, int now, int depth, int limit, boolean[] visited){
